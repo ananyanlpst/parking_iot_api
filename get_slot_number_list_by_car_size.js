@@ -4,7 +4,7 @@ const app = express()
 
 app.use(express.json())
 
-app.post('/get_plat_number_list_by_car_size', (req, res) => {
+app.post('/get_slot_number_list_by_car_size', (req, res) => {
     const { car_size } = req.body
 
     var con = mysql.createConnection({
@@ -20,25 +20,25 @@ app.post('/get_plat_number_list_by_car_size', (req, res) => {
             return
         }
 
-        // get plate number list from car size
-        var query_get_list = "SELECT plate_number FROM db_parking_list WHERE car_size = '"+car_size+"' and active = 1"
+        // get slot number list from car size
+        var query_get_list = "SELECT park_slot FROM db_parking_list WHERE car_size = '"+car_size+"' and active = 1"
         con.query(query_get_list, (err,result) => {
             if(err){
                 console.error(err.stack)
                 return
             }
 
-            var plate_number_list = []
+            var slot_number_list = []
             result.forEach(element => {
-                plate_number_list.push(element.plate_number)
+                slot_number_list.push(element.park_slot)
             })
             
             res.json({
                 result: {
                     car_size,
                     status: 'active',
-                    total: plate_number_list.length,
-                    plate_number_list
+                    total: slot_number_list.length,
+                    slot_number_list
                 }
             })
         })
