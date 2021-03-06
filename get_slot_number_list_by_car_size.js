@@ -21,7 +21,7 @@ app.post('/get_slot_number_list_by_car_size', (req, res) => {
         }
 
         // get slot number list from car size
-        var query_get_list = "SELECT park_slot FROM db_parking_list WHERE car_size = '"+car_size+"' and active = 1"
+        var query_get_list = "SELECT db_parking_list.park_slot FROM db_parking_list INNER JOIN db_parking ON db_parking_list.floor = db_parking.floor WHERE car_size = '"+car_size+"' and active = true"
         con.query(query_get_list, (err,result) => {
             if(err){
                 console.error(err.stack)

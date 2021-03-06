@@ -14,7 +14,7 @@ app.post('/create_parking', (req, res) => {
     for(var i = 1; i <= total; ++i){
         var slot = floor.concat(i.toString())
         park_slot.push(slot)
-        slot_car.push(new Array(slot, floor, true))
+        slot_car.push(new Array(slot, true))
     }
 
     const available = total
@@ -33,6 +33,7 @@ app.post('/create_parking', (req, res) => {
             return
         }
 
+        // insert create parking iot into table db_parking
         var query_create_parking = "INSERT INTO db_parking(floor, park_slot, car_size, total, available, unavailable) VALUES ('"+floor+"', '"+park_slot+"', '"+car_size+"', '"+total+"', '"+available+"', '"+unavailable+"')"
         con.query(query_create_parking, (err, result) => {
             if(err){
@@ -41,7 +42,8 @@ app.post('/create_parking', (req, res) => {
             }
         })
 
-        var query_park_slot = "INSERT INTO db_park_slot(slot, floor, active) VALUES ?"
+        // insert parking slot number into table db_park_slot
+        var query_park_slot = "INSERT INTO db_park_slot(slot, active) VALUES ?"
         con.query(query_park_slot, [slot_car], (err, result) => {
             if(err){
                 console.error(err.stack)

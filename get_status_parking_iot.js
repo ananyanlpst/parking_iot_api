@@ -20,6 +20,7 @@ app.post('/get_status_parking_lot', (req, res) => {
             return
         }
 
+        // get all data of this floor
         var query_get_status = "SELECT * FROM db_parking WHERE floor = '"+floor+"'"
         con.query(query_get_status, (ree,result) => {
             if(err){

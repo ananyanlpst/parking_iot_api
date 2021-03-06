@@ -42,7 +42,7 @@ app.post('/park_the_car', (req, res) => {
                 var unavailable = result['0'].unavailable
                 
                 // allocate parking slot to a car
-                var query_find_slot = "SELECT slot FROM db_park_slot WHERE floor = '"+floor+"' and active = true order by no asc limit 1"
+                var query_find_slot = "SELECT db_park_slot.slot FROM db_park_slot INNER JOIN db_parking ON db_park_slot.slot LIKE CONCAT('%', db_parking.floor, '%') WHERE floor = '"+floor+"' and active = true order by no asc limit 1"
                 con.query(query_find_slot, (err, result) => {
                     if(err){
                         console.error(err.stack)
@@ -56,8 +56,8 @@ app.post('/park_the_car', (req, res) => {
                     const datetime = new Date(timestamp).toLocaleDateString()+" "+new Date(timestamp).toLocaleTimeString()
 
                     // insert parking list
-                    var data_parking_list = new Array(new Array(ticket_id, floor, park_slot, plate_number, car_size, timestamp, true))
-                    var query_add_parking_list = "INSERT INTO db_parking_list(ticket_id, floor, park_slot, plate_number, car_size, datetime, active) VALUES ?"
+                    var data_parking_list = new Array(new Array(ticket_id, floor, park_slot, plate_number, timestamp, true))
+                    var query_add_parking_list = "INSERT INTO db_parking_list(ticket_id, floor, park_slot, plate_number, datetime, active) VALUES ?"
                     con.query(query_add_parking_list, [data_parking_list], (err, result) => {
                         if(err){
                             console.error(err.stack)

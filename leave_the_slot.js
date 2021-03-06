@@ -33,7 +33,7 @@ app.post('/leave_the_slot', (req, res) => {
         }
 
         // get data of ticket id
-        var query_get_ticket_id = "SELECT * FROM db_parking_list WHERE ticket_id = '"+ticket_id+"'"
+        var query_get_ticket_id = "SELECT * , db_parking_list.park_slot as slot_car FROM db_parking_list INNER JOIN db_parking ON db_parking.floor = db_parking_list.floor WHERE ticket_id = '"+ticket_id+"'"
         con.query(query_get_ticket_id, (err, result) => {
             if(err){
                 console.error(err.stack)
@@ -41,24 +41,19 @@ app.post('/leave_the_slot', (req, res) => {
             }
 
             const floor = result[0].floor
-            const park_slot = result[0].park_slot
+            const park_slot = result[0].slot_car
             const plate_number = result[0].plate_number
             const car_size = result[0].car_size
+            const total = result[0].total
             const datetime = result[0].datetime
 
             var differencetime = Date.now() - datetime
             const taketime = calculate_taketime(differencetime)+" hrs."
-
-            // get available, unavailable of table db_parking
-            var query_get_db_parking = "SELECT * FROM db_parking WHERE floor = '"+floor+"'"
-            con.query(query_get_db_parking, (err, result) => {
-                if(err){
-                    console.error(err.stack)
-                    return
-                }
+            
+            if(total > result[0].available){
                 const available = result[0].available + 1
                 const unavailable = result[0].unavailable - 1
-
+    
                 var query_update_parking = "UPDATE db_parking SET available = "+available+", unavailable = "+unavailable+" WHERE floor = '"+floor+"'"
                 con.query(query_update_parking, (err, result) => {
                     if(err){
@@ -66,7 +61,12 @@ app.post('/leave_the_slot', (req, res) => {
                         return
                     }
                 })
-            })
+            } else {
+                res.json({
+                    message: "Sorry! parking slot unavailable does not exit."
+                })
+                return
+            }
 
             // update active db_parking_list
             var query_update_db_parking_list = "UPDATE db_parking_list SET active = false WHERE ticket_id = '"+ticket_id+"'"
@@ -78,7 +78,7 @@ app.post('/leave_the_slot', (req, res) => {
             })
 
             // update active db_park_slot
-            var query_update_db_park_slot = "UPDATE db_park_slot SET active = false WHERE slot = '"+park_slot+"'"
+            var query_update_db_park_slot = "UPDATE db_park_slot SET active = true WHERE slot = '"+park_slot+"'"
             con.query(query_update_db_park_slot, (err, result) => {
                 if(err){
                     console.error(err.stack)
