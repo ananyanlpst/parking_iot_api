@@ -1,33 +1,31 @@
-const express = require('express')
 const create_connnection = require('./create_connnection')
-const app = express()
 
-app.use(express.json())
-
-app.post('/get_status_parking_lot', (req, res) => {
+var index = (req, res) => {
     const { floor } = req.body
     
     var con = create_connnection.con
 
-    con.connect((err) => {
+    // get all data of this floor
+    var query_get_status = "SELECT * FROM db_parking WHERE floor = '"+floor+"'"
+    con.query(query_get_status, (err,result) => {
         if(err){
             console.error(err.stack)
             return
         }
 
-        // get all data of this floor
-        var query_get_status = "SELECT * FROM db_parking WHERE floor = '"+floor+"'"
-        con.query(query_get_status, (ree,result) => {
-            if(err){
-                console.error(err.stack)
-                return
-            }
-
+        if(result.length > 0){
             res.json({
                 result: result[0]
             })
-        })
+        } else {
+            res.json({
+                result: "Sorry! floor "+floor+" does not exit. please try again."
+            })
+        }
+        
     })
-})
+}
 
-app.listen(3000)
+module.exports = {
+    index
+}

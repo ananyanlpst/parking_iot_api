@@ -1,10 +1,6 @@
-const express = require('express')
 const create_connnection = require('./create_connnection')
-const app = express()
 
-app.use(express.json())
-
-app.post('/create_parking', (req, res) => {
+var index = (req, res) => {
     const { floor } = req.body
     const { total } = req.body
     const { car_size } = req.body
@@ -58,7 +54,8 @@ app.post('/create_parking', (req, res) => {
             }
         })
     })
+}
 
-})
-
-app.listen(3000)
+module.exports = {
+    index
+}
