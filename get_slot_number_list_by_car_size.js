@@ -26,7 +26,7 @@ var index = (req, res) => {
 
         }else{
             res.json({
-                result: "Sorry! car size '"+car_size+"' does not exist. please try again."
+                message: "Sorry! car size '"+car_size+"' does not exist. please try again."
             })
         }
     })
