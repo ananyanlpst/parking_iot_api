@@ -1,5 +1,5 @@
 const express = require('express')
-const mysql = require('mysql')
+const create_connnection = require('./create_connnection')
 const app = express()
 
 app.use(express.json())
@@ -18,13 +18,8 @@ var calculate_taketime = (ms) => {
 
 app.post('/leave_the_slot', (req, res) => {
     const { ticket_id } = req.body
-    
-    var con = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        database: 'parking_iot'
-    })
+
+    var con = create_connnection.con
 
     con.connect((err) => {
         if(err){

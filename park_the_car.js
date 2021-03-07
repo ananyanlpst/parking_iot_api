@@ -1,5 +1,5 @@
 const express = require('express')
-const mysql = require('mysql')
+const create_connnection = require('./create_connnection')
 const app = express()
 
 app.use(express.json())
@@ -8,12 +8,7 @@ app.post('/park_the_car', (req, res) => {
     const { plate_number } = req.body
     const { car_size } = req.body
 
-    var con = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        database: 'parking_iot'
-    })
+    var con = create_connnection.con
 
     con.connect((err) => {
         if(err){
