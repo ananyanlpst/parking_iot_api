@@ -59,36 +59,51 @@ var index = (req, res) => { // function index รับค่า parameter ค�
 
     var con = create_connnection.con // เชื่อมต่อ database
     
-    // insert create parking iot into table db_parking
-    var query_create_parking = "INSERT INTO db_parking(floor, park_slot, car_size, total, available, unavailable) VALUES ('"+floor+"', '"+park_slot+"', '"+car_size+"', '"+total+"', '"+available+"', '"+unavailable+"')"
-    con.query(query_create_parking, (err, result) => {
+    // check floor in table db_parking เช็คว่ามี floor ที่รับค่ามาหรือยัง
+    var query_check_parking = "SELECT * FROM db_parking WHERE floor = '"+floor+"'"
+    con.query(query_check_parking, (err, result) => {
         if(err){
             console.error(err.stack)
             return
         }
-    })
 
-    // insert parking slot number into table db_park_slot
-    var query_park_slot = "INSERT INTO db_park_slot(slot, active) VALUES ?"
-    con.query(query_park_slot, [slot_car], (err, result) => {
-        if(err){
-            console.error(err.stack)
-            return
+        if(result.length > 0){ // ถ้ามีจำนวนมากกว่า 0
+            res.json({
+                message: "Sorry! floor '"+floor+"' is already in the system."
+            })
+        } else {
+            
+            // insert create parking iot into table db_parking
+            var query_create_parking = "INSERT INTO db_parking(floor, park_slot, car_size, total, available, unavailable) VALUES ('"+floor+"', '"+park_slot+"', '"+car_size+"', '"+total+"', '"+available+"', '"+unavailable+"')"
+            con.query(query_create_parking, (err, result) => {
+                if(err){
+                    console.error(err.stack)
+                    return
+                }
+            })
+
+            // insert parking slot number into table db_park_slot
+            var query_park_slot = "INSERT INTO db_park_slot(slot, active) VALUES ?"
+            con.query(query_park_slot, [slot_car], (err, result) => {
+                if(err){
+                    console.error(err.stack)
+                    return
+                }
+            })
+
+            res.json({ // response data รูปแบบ json
+                message: "Create Successfully!",
+                data: {
+                    floor,
+                    total,
+                    car_size,
+                    park_slot,
+                    available,
+                    unavailable
+                }
+            })
         }
     })
-
-    res.json({ // response data รูปแบบ json
-        message: "Create Successfully!",
-        data: {
-            floor,
-            total,
-            car_size,
-            park_slot,
-            available,
-            unavailable
-        }
-    })
-  
 }
 
 module.exports = { // exports ให้ไฟล์ server.js เรียกใช้ function index
