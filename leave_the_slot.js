@@ -49,6 +49,7 @@ var index = (req, res) => {
                     const available = result[0].available + 1
                     const unavailable = result[0].unavailable - 1
 
+                    // update available value to db_parking
                     var query_update_parking = "UPDATE db_parking SET available = "+available+", unavailable = "+unavailable+" WHERE floor = '"+floor+"'"
                     con.query(query_update_parking, (err, result) => {
                         if(err){

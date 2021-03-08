@@ -18,33 +18,49 @@ var index = (req, res) => {
 
     var con = create_connnection.con
 
-    // insert create parking iot into table db_parking
-    var query_create_parking = "INSERT INTO db_parking(floor, park_slot, car_size, total, available, unavailable) VALUES ('"+floor+"', '"+park_slot+"', '"+car_size+"', '"+total+"', '"+available+"', '"+unavailable+"')"
-    con.query(query_create_parking, (err, result) => {
+    // check floor in table db_parking
+    var query_check_parking = "SELECT * FROM db_parking WHERE floor = '"+floor+"'"
+    con.query(query_check_parking, (err, result) => {
         if(err){
             console.error(err.stack)
             return
         }
-    })
 
-    // insert parking slot number into table db_park_slot
-    var query_park_slot = "INSERT INTO db_park_slot(slot, active) VALUES ?"
-    con.query(query_park_slot, [slot_car], (err, result) => {
-        if(err){
-            console.error(err.stack)
-            return
-        }
-    })
+        if(result.length > 0){
+            res.json({
+                message: "Sorry! floor '"+floor+"' is already in the system."
+            })
+        } else {
+            
+            // insert create parking iot into table db_parking
+            var query_create_parking = "INSERT INTO db_parking(floor, park_slot, car_size, total, available, unavailable) VALUES ('"+floor+"', '"+park_slot+"', '"+car_size+"', '"+total+"', '"+available+"', '"+unavailable+"')"
+            con.query(query_create_parking, (err, result) => {
+                if(err){
+                    console.error(err.stack)
+                    return
+                }
+            })
 
-    res.json({
-        message: "Create Successfully!",
-        data: {
-            floor,
-            total,
-            car_size,
-            park_slot,
-            available,
-            unavailable
+            // insert parking slot number into table db_park_slot
+            var query_park_slot = "INSERT INTO db_park_slot(slot, active) VALUES ?"
+            con.query(query_park_slot, [slot_car], (err, result) => {
+                if(err){
+                    console.error(err.stack)
+                    return
+                }
+            })
+
+            res.json({
+                message: "Create Successfully!",
+                data: {
+                    floor,
+                    total,
+                    car_size,
+                    park_slot,
+                    available,
+                    unavailable
+                }
+            })
         }
     })
 }
